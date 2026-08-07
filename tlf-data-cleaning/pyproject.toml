@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tlf-data-cleaning"
+version = "0.1.0"
+description = "Data extraction, transformation, normalization, deduplication, and quality-check pipelines for the TLF ecosystem."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "pdfplumber>=0.10.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "reportlab>=4.0.0"]
+
+[tool.setuptools.packages.find]
+include = ["tlf_data_cleaning*"]

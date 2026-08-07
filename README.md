@@ -7,6 +7,7 @@ A modular, enterprise-grade data management platform designed to store, clean, v
 ## Table of Contents
 
 - [Overview](#overview)
+- [Currently Available](#currently-available)
 - [Architecture](#architecture)
 - [Python Packages](#python-packages)
 - [npm Packages](#npm-packages)
@@ -29,6 +30,21 @@ TLF Data Manager is the central data hub of the TLF ecosystem. It provides:
 - **Interoperability** — Import and export in CSV, JSON, Excel, Parquet, and more.
 - **Module Integration** — Seamless data flow with Data Analysis, Data Explorer, and other TLF modules.
 
+Everything below this point describes the long-term vision for this repo. For what you can actually install and use **today**, see [Currently Available](#currently-available) — the rest of this README is a roadmap, not a changelog.
+
+---
+
+## Currently Available
+
+One package is built, tested, and ready to use today. Everything else in this README (the platform services, npm packages, web UI, database/search/auth infrastructure) is planned, not yet built.
+
+| Package | Description | Install |
+|---|---|---|
+| [`tlf-data-cleaning`](tlf-data-cleaning/) | PDF table extraction (`PDFTableExtractor`) + composable cleaning rules (rename, strip, coerce numeric, dedupe, drop/fill missing) + a `CleaningPipeline` that chains them, optionally starting from a PDF and exporting straight to CSV. Solves the concrete problem of turning government census PDFs into the canonical schema `tlf-census-stats` expects. | `pip install tlf-data-cleaning` |
+
+`tlf-data-cleaning` is part of the TLF ("The Living Facts") initiative and has **no runtime dependency** on `tlf-census-stats` or `tlf-statistical-summary` (in the sibling `TLF-Data-Analysis` repo) — they compose via file formats (CSV/canonical schema), not shared code.
+See `tlf-data-cleaning`'s own README for the three ways to combine it with those packages.
+
 ---
 
 ## Architecture
@@ -37,24 +53,24 @@ The project follows a **package-first** design:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    TLF Data Manager Platform                 │
+│                    TLF Data Manager Platform                │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │
 │  │   Web UI     │  │   Admin      │  │   API Gateway    │   │
 │  │  (React)     │  │   Dashboard  │  │   (FastAPI)      │   │
 │  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘   │
-│         └──────────────────┼───────────────────┘             │
-│                            │                                │
-│  ┌─────────────────────────┴─────────────────────────────┐  │
-│  │              Platform Services (Orchestration)         │  │
-│  │  Dataset Mgmt │ Search │ Auth │ Import/Export │ Publish │  │
-│  └─────────────────────────────────────────────────────┘  │
+│         └─────────────────┼───────────────────┘             │
+│                           │                                 │
+│  ┌────────────────────────┴───────────────────────────────┐ │
+│  │              Platform Services (Orchestration)         │ │
+│  │ Dataset Mgmt │ Search │ Auth │ Import/Export │ Publish │ │
+│  └────────────────────────────────────────────────────────┘ │
 │                            │                                │
 │         ┌──────────────────┼──────────────────┐             │
 │         ▼                  ▼                  ▼             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Python pkgs  │  │   npm pkgs   │  │   Storage    │      │
-│  │  (Backend)   │  │  (Frontend)  │  │  (DB / S3)   │      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │ Python pkgs  │  │   npm pkgs   │  │   Storage    │       │
+│  │  (Backend)   │  │  (Frontend)  │  │  (DB / S3)   │       │
+│  └──────────────┘  └──────────────┘  └──────────────┘       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -66,11 +82,11 @@ Each package is **published independently**, allowing external projects to consu
 
 | Package | Description |
 |---------|-------------|
+| `tlf-data-cleaning` | ✅ **Available now.** PDF extraction + composable cleaning rules + pipeline orchestration. |
 | `tlf-data-models` | Core Pydantic/SQLAlchemy models for datasets, sources, metadata, cleaning rules, and validation schemas. |
 | `tlf-storage-engine` | Database abstraction layer supporting PostgreSQL, MongoDB, or object storage (S3/MinIO) with migration tools. |
 | `tlf-api-core` | FastAPI-based framework for standardized CRUD endpoints, pagination, filtering, and response serialization. |
 | `tlf-auth-jwt` | JWT authentication, RBAC, and permission decorators for securing endpoints. |
-| `tlf-data-cleaning` | Data transformation, normalization, deduplication, and quality-check pipelines. |
 | `tlf-validation-engine` | Schema validation, constraint checking, and integrity enforcement. |
 | `tlf-search-indexer` | Elasticsearch/Solr client wrapper for indexing and advanced querying. |
 | `tlf-io-formats` | Import/export handlers for CSV, JSON, Excel, Parquet with streaming support. |
@@ -80,12 +96,18 @@ Each package is **published independently**, allowing external projects to consu
 ### Installation
 
 ```bash
+# What actually exists today:
+pip install tlf-data-cleaning
+
+# Planned (not yet published):
 pip install tlf-data-models tlf-api-core tlf-auth-jwt
 ```
 
 ---
 
 ## npm Packages
+
+*(Planned — none of these exist yet.)*
 
 | Package | Description |
 |---------|-------------|
@@ -109,7 +131,7 @@ npm install @tlf/data-manager-sdk @tlf/react-data-components
 
 ## Platform Services
 
-The platform composes packages into deployable, scalable services:
+*(Planned — this orchestration/deployment layer doesn't exist yet. Today, `tlf-data-cleaning` is a standalone Python package, not a service.)*
 
 | Service | Responsibility |
 |---------|----------------|
@@ -130,7 +152,7 @@ The platform composes packages into deployable, scalable services:
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisites (for the platform vision described above)
 
 - Python 3.11+
 - Node.js 20+
@@ -138,18 +160,21 @@ The platform composes packages into deployable, scalable services:
 - Elasticsearch 8+ (or Solr 9+)
 - Redis 7+ (for caching and job queues)
 
-### Quick Start
+### Quick Start — using what's available today
 
 ```bash
-# Clone the monorepo
+pip install tlf-data-cleaning
+
+# Or from source:
 git clone https://github.com/ctpl-git/TLF-Data-Manager.git
 cd TLF-Data-Manager
+pip install -e ".[dev]"
+pytest tests/
+```
 
-# Install Python dependencies
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+### Quick Start — full platform vision (not yet buildable)
 
+```bash
 # Install Node dependencies
 npm install
 
