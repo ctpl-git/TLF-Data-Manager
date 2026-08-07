@@ -7,6 +7,10 @@ name = "tlf-data-cleaning"
 version = "0.1.0"
 description = "Data extraction, transformation, normalization, deduplication, and quality-check pipelines for the TLF ecosystem."
 readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Sanchita Karki", email = "karkisanchu06@gmail.com" },
+]
 requires-python = ">=3.9"
 dependencies = [
     "pandas>=2.0.0",
@@ -15,6 +19,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0.0", "reportlab>=4.0.0"]
+
+
+[project.urls]
+Homepage = "https://github.com/ctpl-git/TLF-Data-Manager"
+Repository = "https://github.com/ctpl-git/TLF-Data-Manager"
+Issues = "https://github.com/ctpl-git/TLF-Data-Manager/issues"
 
 [tool.setuptools.packages.find]
 include = ["tlf_data_cleaning*"]
